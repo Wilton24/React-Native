@@ -11,14 +11,13 @@ export default function Index() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Fetch Pokémon data
     const fetchPokemon = async () => {
       try {
         const response = await fetch(
           "https://pokeapi.co/api/v2/pokemon?limit=20"
         );
         const data = await response.json();
-        setPokemonList(data.results); // data.results is an array of Pokémon
+        setPokemonList(data.results);
       } catch (error) {
         console.error("Error fetching Pokémon:", error);
       } finally {
