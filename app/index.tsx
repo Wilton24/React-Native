@@ -9,7 +9,6 @@ type Pokemon = {
 export default function Index() {
   const [pokemonList, setPokemonList] = useState<Pokemon[]>([]);
   const [loading, setLoading] = useState(true);
-
   const [speciMon, setSpeciMon] = useState<any>(null);
 
   useEffect(() => {
@@ -19,7 +18,26 @@ export default function Index() {
           "https://pokeapi.co/api/v2/pokemon?limit=20"
         );
         const data = await response.json();
-        setPokemonList(data.results);
+        const results = data.results;
+        const pokemonData = await Promise.all(
+          results.map(async (result: any) => {
+            const pokemonResponse = await fetch(result.url);
+            const pokemonData = await pokemonResponse.json();
+            return {
+              name: result.name,
+              url: pokemonData.sprites.front_default,
+            } as Pokemon;
+          })
+        );
+        setPokemonList(pokemonData);
+
+        console.log(pokemonData);
+
+        // setPokemonList(results.map((result: any) => ({
+        //   name: result.name,
+        //   url: result.sprites.front_default,
+        // } as Pokemon)));
+
       } catch (error) {
         console.error("Error fetching Pokémon:", error);
       } finally {
@@ -33,7 +51,7 @@ export default function Index() {
         const response = await fetch("https://pokeapi.co/api/v2/pokemon/1");
         const data = await response.json();
         setSpeciMon(data.sprites.front_default);
-        console.log(`SPECIMON:`, data.sprites.front_default);
+        // console.log(`SPECIMON:`, data.sprites.front_default);
       }
       catch (error) {
         console.error("Error fetching Pokémon:", error);
