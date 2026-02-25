@@ -1,65 +1,40 @@
 import { useEffect, useState } from "react";
 import { Text, View, FlatList, StyleSheet, Image, Modal, Button } from "react-native";
+import { Pokemon } from "../types";
+import { fetchPokemonList } from "@/services/pokemonService";
 
-type Pokemon = {
-  name: string;
-  url: string;
-};
 
 export default function Index() {
   const [pokemonList, setPokemonList] = useState<Pokemon[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [speciMon, setSpeciMon] = useState<any>(null);
   const [modalVisible, setModalVisible] = useState(false);
 
   useEffect(() => {
-    const fetchPokemon = async () => {
-      try {
-        const response = await fetch(
-          "https://pokeapi.co/api/v2/pokemon?limit=20"
-        );
-        const data = await response.json();
-        const results = data.results;
-        const pokemonData = await Promise.all(
-          results.map(async (result: any) => {
-            const pokemonResponse = await fetch(result.url);
-            const pokemonData = await pokemonResponse.json();
-            return {
-              name: result.name,
-              url: pokemonData.sprites.front_default,
-            } as Pokemon;
-          })
-        );
-        setPokemonList(pokemonData);
-      } catch (error) {
-        console.error("Error fetching Pokémon:", error);
-      } finally {
-        setLoading(false);
-      }
+    async function fetchPokemon() {
+      setLoading(true);
+      const pokeList = await fetchPokemonList("https://pokeapi.co/api/v2/pokemon", 20);
+      setPokemonList(pokeList);
+      setLoading(false);
     };
 
+    fetchPokemon();
 
     async function fetchSpeciMon() {
       try {
         const response = await fetch("https://pokeapi.co/api/v2/pokemon/1");
         const data = await response.json();
         setSpeciMon(data.sprites.front_default);
-        // console.log(`SPECIMON:`, data.sprites.front_default);
       }
       catch (error) {
         console.error("Error fetching Pokémon:", error);
       }
     }
-
-    fetchPokemon();
     fetchSpeciMon();
   }, []);
 
   function toggleModalStatus(modalStatus: boolean) {
     setModalVisible(modalStatus);
-
-    console.log(modalVisible);
-
   }
 
   if (loading) {
@@ -76,7 +51,7 @@ export default function Index() {
       <Button title="Open Modal" onPress={() => toggleModalStatus(true)} />
       <FlatList
         data={pokemonList}
-        keyExtractor={(item) => item.name} // unique key for each item
+        keyExtractor={(item) => item.name}
         renderItem={({ item }) => (
           <View style={styles.pokemonCard}>
             <Image source={{ uri: item.url }} style={styles.image} />
