@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Text, View, FlatList, StyleSheet, Image } from "react-native";
+import { Text, View, FlatList, StyleSheet, Image, Modal, Button } from "react-native";
 
 type Pokemon = {
   name: string;
@@ -10,6 +10,7 @@ export default function Index() {
   const [pokemonList, setPokemonList] = useState<Pokemon[]>([]);
   const [loading, setLoading] = useState(true);
   const [speciMon, setSpeciMon] = useState<any>(null);
+  const [modalVisible, setModalVisible] = useState(false);
 
   useEffect(() => {
     const fetchPokemon = async () => {
@@ -30,7 +31,6 @@ export default function Index() {
           })
         );
         setPokemonList(pokemonData);
-        console.log(pokemonData);
       } catch (error) {
         console.error("Error fetching Pokémon:", error);
       } finally {
@@ -55,8 +55,12 @@ export default function Index() {
     fetchSpeciMon();
   }, []);
 
+  function toggleModalStatus(modalStatus: boolean) {
+    setModalVisible(modalStatus);
 
+    console.log(modalVisible);
 
+  }
 
   if (loading) {
     return (
@@ -69,6 +73,7 @@ export default function Index() {
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Pokedex</Text>
+      <Button title="Open Modal" onPress={() => toggleModalStatus(true)} />
       <FlatList
         data={pokemonList}
         keyExtractor={(item) => item.name} // unique key for each item
@@ -82,12 +87,18 @@ export default function Index() {
         contentContainerStyle={{ paddingBottom: 20 }}
       />
 
-      <Image
-        source={{
-          uri: speciMon
-        }}
-        style={styles.image}
-      />
+      <Modal
+        visible={modalVisible}
+        animationType="slide"
+        transparent={true}
+        onRequestClose={() => toggleModalStatus(false)}>
+        <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+          <View style={{ width: 200, height: 200, backgroundColor: "white", padding: 20 }}>
+            <Text>Hello, I am a Modal!</Text>
+            <Button title="Close" onPress={() => toggleModalStatus(false)} />
+          </View>
+        </View>
+      </Modal>
     </View>
 
   );
@@ -116,9 +127,9 @@ const styles = StyleSheet.create({
     borderBottomColor: "#333",
   },
   image: {
-    width: 120,
-    height: 120, // must define width & height!
-    resizeMode: "contain", // optional: contain, cover, stretch
+    width: 80,
+    height: 80,
+    resizeMode: "contain",
   },
   pokemonCard: {
     flex: 1,
