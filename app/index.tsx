@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Text, View, FlatList, StyleSheet } from "react-native";
+import { Text, View, FlatList, StyleSheet, Image } from "react-native";
 
 type Pokemon = {
   name: string;
@@ -9,6 +9,8 @@ type Pokemon = {
 export default function Index() {
   const [pokemonList, setPokemonList] = useState<Pokemon[]>([]);
   const [loading, setLoading] = useState(true);
+
+  const [speciMon, setSpeciMon] = useState<any>(null);
 
   useEffect(() => {
     const fetchPokemon = async () => {
@@ -25,8 +27,25 @@ export default function Index() {
       }
     };
 
+
+    async function fetchSpeciMon() {
+      try {
+        const response = await fetch("https://pokeapi.co/api/v2/pokemon/1");
+        const data = await response.json();
+        setSpeciMon(data.sprites.front_default);
+        console.log(`SPECIMON:`, data.sprites.front_default);
+      }
+      catch (error) {
+        console.error("Error fetching Pokémon:", error);
+      }
+    }
+
     fetchPokemon();
+    fetchSpeciMon();
   }, []);
+
+
+
 
   if (loading) {
     return (
@@ -39,14 +58,22 @@ export default function Index() {
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Pokedex</Text>
-      <FlatList
+      {/* <FlatList
         data={pokemonList}
         keyExtractor={(item) => item.name}
         renderItem={({ item }) => (
           <Text style={styles.pokemonName}>{item.name}</Text>
         )}
+      /> */}
+
+      <Image
+        source={{
+          uri: speciMon
+        }}
+        style={styles.image}
       />
     </View>
+
   );
 }
 
@@ -71,5 +98,10 @@ const styles = StyleSheet.create({
     paddingVertical: 8,
     borderBottomWidth: 1,
     borderBottomColor: "#333",
+  },
+  image: {
+    width: 120,
+    height: 120, // must define width & height!
+    resizeMode: "contain", // optional: contain, cover, stretch
   },
 });
