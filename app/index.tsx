@@ -30,14 +30,7 @@ export default function Index() {
           })
         );
         setPokemonList(pokemonData);
-
         console.log(pokemonData);
-
-        // setPokemonList(results.map((result: any) => ({
-        //   name: result.name,
-        //   url: result.sprites.front_default,
-        // } as Pokemon)));
-
       } catch (error) {
         console.error("Error fetching Pokémon:", error);
       } finally {
@@ -76,13 +69,18 @@ export default function Index() {
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Pokedex</Text>
-      {/* <FlatList
+      <FlatList
         data={pokemonList}
-        keyExtractor={(item) => item.name}
+        keyExtractor={(item) => item.name} // unique key for each item
         renderItem={({ item }) => (
-          <Text style={styles.pokemonName}>{item.name}</Text>
+          <View style={styles.pokemonCard}>
+            <Image source={{ uri: item.url }} style={styles.image} />
+            <Text style={styles.pokemonName}>{item.name}</Text>
+          </View>
         )}
-      /> */}
+        numColumns={2} // optional, show in grid
+        contentContainerStyle={{ paddingBottom: 20 }}
+      />
 
       <Image
         source={{
@@ -121,5 +119,13 @@ const styles = StyleSheet.create({
     width: 120,
     height: 120, // must define width & height!
     resizeMode: "contain", // optional: contain, cover, stretch
+  },
+  pokemonCard: {
+    flex: 1,
+    backgroundColor: "#1e1e1e",
+    margin: 5,
+    borderRadius: 10,
+    alignItems: "center",
+    padding: 10,
   },
 });
