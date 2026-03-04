@@ -49,7 +49,7 @@ export default function Index() {
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Pokedex</Text>
-      <Button title="Open Modal" onPress={() => toggleModalStatus(true)} />
+      <Text style={styles.pokemonName}>List of Pokemons </Text>
       <FlatList
         data={pokemonList}
         keyExtractor={(item) => item.name}
@@ -75,15 +75,17 @@ export default function Index() {
         animationType="slide"
         transparent={true}
         onRequestClose={() => toggleModalStatus(false)}>
-        <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-          <View style={{ width: 250, backgroundColor: "white", padding: 20 }}>
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalContainer}>
             {selectedPokemon && (
               <>
                 <Image
                   source={{ uri: selectedPokemon.url }}
-                  style={{ width: 120, height: 120 }}
+                  style={styles.modalImage}
                 />
-                <Text>{selectedPokemon.name}</Text>
+                <Text style={styles.modalName}>
+                  {selectedPokemon.name}
+                </Text>
               </>
             )}
 
