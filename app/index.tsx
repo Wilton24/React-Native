@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Text, View, FlatList, Image, Modal, Button } from "react-native";
+import { Text, View, FlatList, Image, Modal, Button, TouchableOpacity } from "react-native";
 import { Pokemon } from "../types";
 import { fetchPokemonList, fetchPokemonDetails } from "@/services/pokemonService";
 import { styles } from "@/styles/pokemonCardStyles";
@@ -9,6 +9,7 @@ export default function Index() {
   const [loading, setLoading] = useState(false);
   const [speciMon, setSpeciMon] = useState<any>(null);
   const [modalVisible, setModalVisible] = useState(false);
+  const [selectedPokemon, setSelectedPokemon] = useState<Pokemon | null>(null);
 
   useEffect(() => {
     async function fetchPokemon() {
@@ -54,11 +55,18 @@ export default function Index() {
         keyExtractor={(item) => item.name}
         renderItem={({ item }) => (
           <View style={styles.pokemonCard}>
-            <Image source={{ uri: item.url }} style={styles.image} />
+            <TouchableOpacity
+              onPress={() => {
+                setSelectedPokemon(item);
+                setModalVisible(true);
+              }}
+            >
+              <Image source={{ uri: item.url }} style={styles.image} />
+            </TouchableOpacity>
             <Text style={styles.pokemonName}>{item.name}</Text>
           </View>
         )}
-        numColumns={2} // optional, show in grid
+        numColumns={2}
         contentContainerStyle={{ paddingBottom: 20 }}
       />
 
@@ -68,8 +76,17 @@ export default function Index() {
         transparent={true}
         onRequestClose={() => toggleModalStatus(false)}>
         <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-          <View style={{ width: 200, height: 200, backgroundColor: "white", padding: 20 }}>
-            <Text>Hello, I am a Modal!</Text>
+          <View style={{ width: 250, backgroundColor: "white", padding: 20 }}>
+            {selectedPokemon && (
+              <>
+                <Image
+                  source={{ uri: selectedPokemon.url }}
+                  style={{ width: 120, height: 120 }}
+                />
+                <Text>{selectedPokemon.name}</Text>
+              </>
+            )}
+
             <Button title="Close" onPress={() => toggleModalStatus(false)} />
           </View>
         </View>

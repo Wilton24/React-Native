@@ -20,7 +20,8 @@ export const fetchPokemonList = async (url: string, limit = 20) => {
     };
 };
 
-export const fetchPokemonDetails = async (url: string) => {
+
+export const fetchPokemonDetails = async (url: string, id: number) => {
     const response = await fetch(url);
     const data = await response.json();
     return data.sprites.front_default;
